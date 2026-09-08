@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Subjective Listening Evaluation for Music Editing</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --danger: #b91c1c;
+      --ok: #047857;
+      --shadow: 0 8px 26px rgba(0,0,0,.06);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                   "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+    .wrap {
+      width: min(980px, calc(100% - 28px));
+      margin: 26px auto 80px;
+    }
+    .hero, .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .hero {
+      padding: 28px 30px;
+      margin-bottom: 18px;
+    }
+    h1 { margin: 0 0 10px; font-size: 30px; }
+    h2 { margin: 0 0 12px; font-size: 22px; }
+    h3 { margin: 22px 0 8px; font-size: 18px; }
+    p { margin: 8px 0; }
+    .muted { color: var(--muted); }
+    .note {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 14px;
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 18px;
+    }
+    label.field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-weight: 600;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+    .progress-shell {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(246,247,251,.92);
+      backdrop-filter: blur(8px);
+      padding: 8px 0 12px;
+      margin-bottom: 8px;
+    }
+    .progress-line {
+      height: 10px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width .2s ease;
+    }
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .section-title {
+      margin: 26px 0 12px;
+      font-size: 24px;
+    }
+    .card {
+      padding: 24px;
+      margin: 16px 0;
+    }
+    .sample-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .sample-id { font-weight: 800; font-size: 20px; }
+    .tag {
+      font-size: 12px;
+      border: 1px solid #bfdbfe;
+      background: var(--accent-soft);
+      color: #1d4ed8;
+      border-radius: 999px;
+      padding: 3px 9px;
+      white-space: nowrap;
+    }
+    .block { margin: 17px 0; }
+    .block-title { font-weight: 750; margin-bottom: 7px; }
+    .prompt-box {
+      padding: 12px 14px;
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      white-space: pre-wrap;
+    }
+    audio { width: 100%; max-width: 720px; }
+    .question {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px dashed #d1d5db;
+    }
+    .q-title { font-weight: 800; margin-bottom: 4px; }
+    .q-help { color: var(--muted); font-size: 14px; margin-bottom: 11px; }
+    .choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+    .choice {
+      position: relative;
+    }
+    .choice input { position: absolute; opacity: 0; pointer-events: none; }
+    .choice label {
+      display: inline-block;
+      min-width: 112px;
+      text-align: center;
+      padding: 9px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      background: #fff;
+      cursor: pointer;
+      transition: .15s ease;
+    }
+    .choice input:checked + label {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+    .preference-audios {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .audio-panel {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fafafa;
+    }
+    .actions {
+      margin-top: 26px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    button {
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-secondary { background: #e5e7eb; color: #111827; }
+    .status {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      display: none;
+    }
+    .status.bad { display: block; background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+    .status.ok { display: block; background: #ecfdf5; color: var(--ok); border: 1px solid #a7f3d0; }
+    code {
+      background: #f3f4f6;
+      border-radius: 6px;
+      padding: 2px 5px;
+    }
+    details {
+      margin-top: 12px;
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 14px;
+    }
+    summary { cursor: pointer; font-weight: 750; }
+    @media (max-width: 720px) {
+      .meta, .preference-audios { grid-template-columns: 1fr; }
+      .hero, .card { padding: 18px; }
+      h1 { font-size: 25px; }
+      .choice label { min-width: 92px; }
+    }
+    @media print {
+      .progress-shell, .actions, details { display:none !important; }
+      body { background:#fff; }
+      .hero, .card { box-shadow:none; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <section class="hero">
+    <h1>Subjective Listening Evaluation for Music Editing</h1>
+    <p>Thank you for participating in this experiment. This study contains <strong>30 MOS evaluation trials</strong> and <strong>5 user preference trials</strong>.</p>
+    <p class="muted">Please use headphones and complete the test in a quiet environment. Keep the playback volume at a comfortable and consistent level throughout the experiment.</p>
+
+    <h3>Part I: MOS Evaluation</h3>
+    <p><strong>MOS-P (Source Content Preservation)</strong>: Evaluate how well the edited result preserves the source music content that is <strong>unrelated to the editing instruction</strong>. Please consider melody, rhythm, structure, harmony, and other musical content that should remain unchanged.</p>
+    <p><strong>MOS-T (Target Editing Fidelity)</strong>: Evaluate how well the edited result satisfies the editing instruction and realizes the intended target musical attribute.</p>
+
+    <h3>Part II: User Preference Evaluation</h3>
+    <p>Each trial presents two anonymized edited results, A and B. Considering both <strong>target editing fidelity</strong> and <strong>source content preservation</strong>, please select the result with better overall performance.</p>
+
+    <div class="note">
+      Five-point scale: 1 = Bad, 2 = Poor, 3 = Fair, 4 = Good, 5 = Excellent.
+    </div>
+
+    <div class="meta">
+      <label class="field">
+        Participant ID (required)
+        <input id="participantId" type="text" placeholder="e.g., P01" />
+      </label>
+      <label class="field">
+        Notes (optional)
+        <input id="participantNote" type="text" placeholder="Optional" />
+      </label>
+    </div>
+  </section>
+
+  <div class="progress-shell">
+    <div class="progress-text">
+      <span id="progressLabel">Progress</span>
+      <span id="progressCount">0 / 35</span>
+    </div>
+    <div class="progress-line"><div id="progressFill" class="progress-fill"></div></div>
+  </div>
+
+  <h2 class="section-title">Part I: MOS Evaluation</h2>
+  <div id="mosContainer"></div>
+
+  <h2 class="section-title">Part II: User Preference Evaluation</h2>
+  <div id="preferenceContainer"></div>
+
+  <section class="card">
+    <h2>Submission and Export</h2>
+    <p>Click “Check Completion” to check for unanswered trials. Click “Export CSV” to save all ratings for the current participant as a CSV file.</p>
+    <p class="muted">This standalone version does not automatically upload responses to a server.</p>
+    <div class="actions">
+      <button class="btn-secondary" type="button" onclick="checkCompletion()">Check Completion</button>
+      <button class="btn-primary" type="button" onclick="exportCSV()">Export CSV</button>
+      <button class="btn-secondary" type="button" onclick="saveLocal()">Save Locally</button>
+      <button class="btn-secondary" type="button" onclick="restoreLocal()">Restore Saved Data</button>
+    </div>
+    <div id="status" class="status"></div>
+    <div id="downloadArea" style="display:none; margin-top:14px;"></div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   GitHub Pages 使用提示
+   ------------------------------------------------------------
+   本文件已经使用“相对路径”引用音频，例如：
+       audio/mos01_source.mp3
+
+   因此，只要把 index.html 和 audio/ 文件夹一起上传到同一个
+   GitHub 仓库并启用 GitHub Pages，其他参与者就可以通过网页
+   直接播放这些音频。
+
+   重要：不要把路径写成你电脑上的本地路径，例如：
+       C:\Users\...\xxx.mp3
+       file:///C:/...
+   这种路径只有你自己的电脑能访问。
+
+   ============================================================ */
+
+/* ============================================================
+   研究者主要编辑区域
+   ------------------------------------------------------------
+   1) 30 道 MOS：
+      id              : 样本编号
+      sourceAudio     : 源音频路径
+      sourceDescription: 源音乐描述
+      instruction     : 编辑指令
+      editedAudio     : 编辑结果音频路径
+
+   2) 5 道 Preference：
+      id              : 偏好题编号
+      sourceAudio     : 源音频
+      sourceDescription: 源音乐描述
+      instruction     : 编辑指令
+      resultA         : 编辑结果 A
+      resultB         : 编辑结果 B
+
+   你只需要改下面的数据，不需要改后面的网页逻辑。
+   ============================================================ */
+
+/*
+  最新配置：
+  FISC = 50, 395, 534, 540, 599
+  MusicGen = 72, 435, 460, 530, 540
+  Preference = 601, 692, 714, 724, 764
+  描述和编辑指令依据 batch_status.jsonl 对应 index 的 source_prompt / target_prompt；
+  每条英文后均附中文翻译。
+*/
+
+const MOS_ITEMS = [
+  {id:"MOS01", sourceAudio:"audio/FISC/50.wav", sourceDescription:"a recording of upbeat hindustani classical music with harmonium [bansuri] tabla and electronic drums", instruction:"Change bansuri to flute.", editedAudio:"audio/FISC/50e.wav", internalLabel:"FISC / 50", targetPrompt:"a recording of upbeat hindustani classical music with harmonium [flute] tabla and electronic drums"},
+  {id:"MOS02", sourceAudio:"audio/FISC/395.wav", sourceDescription:"a recording of a solo electric guitar playing [blues] licks", instruction:"Change blues to rock.", editedAudio:"audio/FISC/395e.wav", internalLabel:"FISC / 395", targetPrompt:"a recording of a solo electric guitar playing [rock] licks"},
+  {id:"MOS03", sourceAudio:"audio/FISC/534.wav", sourceDescription:"a recording of an [emotional] electric guitar melody with reverb pedal effects and noisy background", instruction:"Change emotional to exhilarating.", editedAudio:"audio/FISC/534e.wav", internalLabel:"FISC / 534", targetPrompt:"a recording of an [exhilarating] electric guitar melody with reverb pedal effects and noisy background"},
+  {id:"MOS04", sourceAudio:"audio/FISC/540.wav", sourceDescription:"a [passionate] classical tune featuring harmonizing trombone melodies", instruction:"Change passionate to melancholic.", editedAudio:"audio/FISC/540e.wav", internalLabel:"FISC / 540", targetPrompt:"a [melancholic] classical tune featuring harmonizing trombone melodies"},
+  {id:"MOS05", sourceAudio:"audio/FISC/599.wav", sourceDescription:"a recording of a [groovy] jazzy bebop with saxophone and baritone saxophones", instruction:"Change groovy to melancholic.", editedAudio:"audio/FISC/599e.wav", internalLabel:"FISC / 599", targetPrompt:"a recording of a [melancholic] jazzy bebop with saxophone and baritone saxophones"},
+  {id:"MOS06", sourceAudio:"audio/MusicGen/72s.wav", sourceDescription:"a playful and joyful bluegrass instrumental featuring banjo mandolin and [acoustic guitar]", instruction:"Change acoustic guitar to piano.", editedAudio:"audio/MusicGen/72.wav", internalLabel:"MusicGen / 72", targetPrompt:"a playful and joyful bluegrass instrumental featuring banjo mandolin and [piano]"},
+  {id:"MOS07", sourceAudio:"audio/MusicGen/435s.wav", sourceDescription:"a recording of [bluegrass gospel] music with violin banjo and bass guitar", instruction:"Change bluegrass gospel to country.", editedAudio:"audio/MusicGen/435.wav", internalLabel:"MusicGen / 435", targetPrompt:"a recording of [country] music with violin banjo and bass guitar"},
+  {id:"MOS08", sourceAudio:"audio/MusicGen/460s.wav", sourceDescription:"a cozy and uplifting [bluegrass] banjo solo", instruction:"Change bluegrass to blues.", editedAudio:"audio/MusicGen/460.wav", internalLabel:"MusicGen / 460", targetPrompt:"a cozy and uplifting [blues] banjo solo"},
+  {id:"MOS09", sourceAudio:"audio/MusicGen/530s.wav", sourceDescription:"a [lively] cheerful instrumental piece featuring classical strings and horn", instruction:"Change lively to melancholy.", editedAudio:"audio/MusicGen/530.wav", internalLabel:"MusicGen / 530", targetPrompt:"a [melancholy] cheerful instrumental piece featuring classical strings and horn"},
+  {id:"MOS10", sourceAudio:"audio/MusicGen/540s.wav", sourceDescription:"a [passionate] classical tune featuring harmonizing trombone melodies", instruction:"Change passionate to melancholic.", editedAudio:"audio/MusicGen/540.wav", internalLabel:"MusicGen / 540", targetPrompt:"a [melancholic] classical tune featuring harmonizing trombone melodies"},
+  {id:"MOS11", sourceAudio:"audio/MusicMagus/301_before.wav", sourceDescription:"This clip features a South Asian, Indian song . There's a singer with a passionate vocal singing atop a tabla being played. There are manjeeras. The recording is of a live performance and it's low quality audio.", instruction:"Change the chord progression to Cm7, Gm7b5/F.", editedAudio:"audio/MusicMagus/301_after.wav", internalLabel:"MusicMagus / 301", targetPrompt:"The chord progression in this song is Cm7, Gm7b5/F."},
+  {id:"MOS12", sourceAudio:"audio/MusicMagus/321_before.wav", sourceDescription:"The low quality recording features an electro song being played in a club and it consists of high pitched, repetitive, female vocals singing over groovy bass, punchy snare hits and shimmering hi hats. It sounds upbeat and energetic, even though the sound is muffled, noisy and in mono.", instruction:"Change the chord progression to Eb, Ebm, N. ", editedAudio:"audio/MusicMagus/321_after.wav", internalLabel:"MusicMagus / 321", targetPrompt:""},
+  {id:"MOS13", sourceAudio:"audio/MusicMagus/339_before.wav", sourceDescription:"The audio contains a female voice singing carnatic tones/melody over a shrutibox/drone sound. The audio quality is decent but contains a lot of white noise. It's assumed that this is an amateur recording. This song may be playing at a music teacher's home demonstrating scales to a student.", instruction:"Change the chord progression to F, Cm.", editedAudio:"audio/MusicMagus/339_after.wav", internalLabel:"MusicMagus / 339", targetPrompt:"The chord progression in this song is F, Cm."},
+  {id:"MOS14", sourceAudio:"audio/MusicMagus/369_before.wav", sourceDescription:"The low quality recording features a live performance of a pop song that consists of groovy synth bass, punchy snare, soft hi hats, heartbeat kick pattern, mellow sustained string melody and passionate female vocal singing over it. It sounds emotional, passionate and groovy thanks to that synth bass.", instruction:"Change the chord progression to Gm, C, D, Bb6, C7.", editedAudio:"audio/MusicMagus/369_after.wav", internalLabel:"MusicMagus / 369", targetPrompt:"The chord progression in this song is Gm, C, D, Bb6, C7."},
+  {id:"MOS15", sourceAudio:"audio/MusicMagus/388_before.wav", sourceDescription:"The jazz music features a swing band playing in the background. In the foreground one can hear tap dancing sounds and the crowd cheering. This and the low audio quality leads me to believe this is a recording of a live tap dancing show.", instruction:"Change the chord progression to Em7b5, Dm, D7/F#, Gm6, A, Dm7, Em7b5, Dm7, Em7b5.", editedAudio:"audio/MusicMagus/388_after.wav", internalLabel:"MusicMagus / 388", targetPrompt:"The chord progression in this song is Em7b5, Dm, D7/F#, Gm6, A, Dm7, Em7b5, Dm7, Em7b5."},
+  {id:"MOS16", sourceAudio:"audio/Steermusic/691.wav", sourceDescription:"a meditative acoustic guitar tune with [minimal instrumentation and calming] tones", instruction:"Change minimal instrumentation and calming to enhanced orchestration and soothing.", editedAudio:"audio/Steermusic/00691e.wav", internalLabel:"Steermusic / 691", targetPrompt:"a meditative acoustic guitar tune with [enhanced orchestration and soothing] tones"},
+  {id:"MOS17", sourceAudio:"audio/Steermusic/752.wav", sourceDescription:"an amateur recording of a drum pad with a [male] voice", instruction:"Change male to female.", editedAudio:"audio/Steermusic/00752e.wav", internalLabel:"Steermusic / 752", targetPrompt:"an amateur recording of a drum pad with a [female] voice"},
+  {id:"MOS18", sourceAudio:"audio/Steermusic/760.wav", sourceDescription:"new age instrumental music with [keyboard synth] harmony and ominous tones", instruction:"Change keyboard synth to guitar synth.", editedAudio:"audio/Steermusic/00760e.wav", internalLabel:"Steermusic / 760", targetPrompt:"new age instrumental music with [guitar synth] harmony and ominous tones"},
+  {id:"MOS19", sourceAudio:"audio/Steermusic/763.wav", sourceDescription:"a recording of a dreamy electric guitar solo with a [psychedelic] effects", instruction:"Change psychedelic to mellow.", editedAudio:"audio/Steermusic/00763e.wav", internalLabel:"Steermusic / 763", targetPrompt:"a recording of a dreamy electric guitar solo with a [mellow] effects"},
+  {id:"MOS20", sourceAudio:"audio/Steermusic/770.wav", sourceDescription:"an enthusiastic hard rock and electronic piece with [intense drumming] narration", instruction:"Change intense drumming to subtle drumming.", editedAudio:"audio/Steermusic/00770e.wav", internalLabel:"Steermusic / 770", targetPrompt:"an enthusiastic hard rock and electronic piece with [subtle drumming] narration"},
+  {id:"MOS21", sourceAudio:"audio/ZETA/691.wav", sourceDescription:"a meditative acoustic guitar tune with [minimal instrumentation and calming] tones", instruction:"Change minimal instrumentation and calming to enhanced orchestration and soothing.", editedAudio:"audio/ZETA/00691e.wav", internalLabel:"ZETA / 691", targetPrompt:"a meditative acoustic guitar tune with [enhanced orchestration and soothing] tones"},
+  {id:"MOS22", sourceAudio:"audio/ZETA/752.wav", sourceDescription:"an amateur recording of a drum pad with a [male] voice", instruction:"Change male to female.", editedAudio:"audio/ZETA/00752e.wav", internalLabel:"ZETA / 752", targetPrompt:"an amateur recording of a drum pad with a [female] voice"},
+  {id:"MOS23", sourceAudio:"audio/ZETA/760.wav", sourceDescription:"new age instrumental music with [keyboard synth] harmony and ominous tones", instruction:"Change keyboard synth to guitar synth.", editedAudio:"audio/ZETA/00760e.wav", internalLabel:"ZETA / 760", targetPrompt:"new age instrumental music with [guitar synth] harmony and ominous tones"},
+  {id:"MOS24", sourceAudio:"audio/ZETA/763.wav", sourceDescription:"a recording of a dreamy electric guitar solo with a [psychedelic] effects", instruction:"Change psychedelic to mellow.", editedAudio:"audio/ZETA/00763e.wav", internalLabel:"ZETA / 763", targetPrompt:"a recording of a dreamy electric guitar solo with a [mellow] effects"},
+  {id:"MOS25", sourceAudio:"audio/ZETA/770.wav", sourceDescription:"an enthusiastic hard rock and electronic piece with [intense drumming] narration", instruction:"Change intense drumming to subtle drumming.", editedAudio:"audio/ZETA/00770e.wav", internalLabel:"ZETA / 770", targetPrompt:"an enthusiastic hard rock and electronic piece with [subtle drumming] narration"},
+  {id:"MOS26", sourceAudio:"audio/audioldm/0.wav", sourceDescription:"a live recording of ambient acoustic [guitar] music", instruction:"Change guitar to violin.", editedAudio:"audio/audioldm/0000audioldm2.wav", internalLabel:"AudioLDM / 0", targetPrompt:"a live recording of ambient acoustic [violin] music"},
+  {id:"MOS27", sourceAudio:"audio/audioldm/20.wav", sourceDescription:"a festive polish folk music with [fiddle] and mandolin", instruction:"Change fiddle to harp.", editedAudio:"audio/audioldm/00020audioldm2.wav", internalLabel:"AudioLDM / 20", targetPrompt:"a festive polish folk music with [harp] and mandolin"},
+  {id:"MOS28", sourceAudio:"audio/audioldm/40.wav", sourceDescription:"an acoustic and electric [guitar] led instrumental piece with a retro rock influence", instruction:"Change guitar to keyboard.", editedAudio:"audio/audioldm/40audioldm2.wav", internalLabel:"AudioLDM / 40", targetPrompt:"an acoustic and electric [keyboard] led instrumental piece with a retro rock influence"},
+  {id:"MOS29", sourceAudio:"audio/audioldm/94.wav", sourceDescription:"a spirited hip hop music with slick [drumming] rhythm and groovy bass line", instruction:"Change drumming to keyboard.", editedAudio:"audio/audioldm/94audioldm2.wav", internalLabel:"AudioLDM / 94", targetPrompt:"a spirited hip hop music with slick [keyboard] rhythm and groovy bass line"},
+  {id:"MOS30", sourceAudio:"audio/audioldm/124.wav", sourceDescription:"a lively latin zumba track featuring strong bass loud electronic drums with a blend of male and female vocals", instruction:"a lively latin zumba track featuring strong bass loud electronic [trumpet] with a blend of male and female vocals", editedAudio:"audio/audioldm/00124audioldm2.wav", internalLabel:"AudioLDM / 124", targetPrompt:"a lively latin zumba track featuring strong bass loud electronic [trumpet] with a blend of male and female vocals"}
+];
+
+const PREFERENCE_ITEMS = [
+  {id:"PREF01", sourceAudio:"audio/reference/Source/601.wav", sourceDescription:"a recording of a solo trumpet piece [upbeat] and cheery", instruction:"Change upbeat to melancholic.", resultA:"audio/reference/FISC/601e.wav", resultB:"audio/reference/Steermusic/601.wav", internalLabel:"Preference / 601", targetPrompt:"a recording of a solo trumpet piece [melancholic] and cheery"},
+  {id:"PREF02", sourceAudio:"audio/reference/Source/692.wav", sourceDescription:"a live recording of a traditional chinese flute with a [harsh] melody", instruction:"Change harsh to serene.", resultA:"audio/reference/FISC/692e.wav", resultB:"audio/reference/Steermusic/692.wav", internalLabel:"Preference / 692", targetPrompt:"a live recording of a traditional chinese flute with a [serene] melody"},
+  {id:"PREF03", sourceAudio:"audio/reference/Source/714.wav", sourceDescription:"a relaxing guitar solo instrumental with [distortion] tones", instruction:"Change distortion to undistorted clear tones.", resultA:"audio/reference/FISC/714e.wav", resultB:"audio/reference/Steermusic/714.wav", internalLabel:"Preference / 714", targetPrompt:"a relaxing guitar solo instrumental with [undistorted clear] tones"},
+  {id:"PREF04", sourceAudio:"audio/reference/Source/724.wav", sourceDescription:"a recording of loud church bells with a [noisy fading] background", instruction:"Change the noisy fading background to a clear vibrant background.", resultA:"audio/reference/FISC/724e.wav", resultB:"audio/reference/Steermusic/724.wav", internalLabel:"Preference / 724", targetPrompt:"a recording of loud church bells with a [clear vibrant] background"},
+  {id:"PREF05", sourceAudio:"audio/reference/Source/764.wav", sourceDescription:"a recording of banjo music with [sweet] melodies in folk country and bluegrass styles", instruction:"Change sweet melodies to heartfelt melodies.", resultA:"audio/reference/FISC/764e.wav", resultB:"audio/reference/Steermusic/764.wav", internalLabel:"Preference / 764", targetPrompt:"a recording of banjo music with [heartfelt] melodies in folk country and bluegrass styles"}
+];
+
+/* ====== 可选设置 ====== */
+const REQUIRE_ALL_ANSWERS_BEFORE_EXPORT = true; // true：必须全部答完才可导出
+const RANDOMIZE_MOS_ORDER = false;               // true：刷新页面时随机 MOS 顺序
+const RANDOMIZE_PREFERENCE_ORDER = false;        // true：刷新页面时随机 Preference 顺序
+const RANDOMIZE_AB_SIDE = false;                 // true：每道偏好题随机交换 A/B（注意你需保留后台映射）
+
+function shuffled(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+let mosItems = RANDOMIZE_MOS_ORDER ? shuffled(MOS_ITEMS) : [...MOS_ITEMS];
+let prefItems = RANDOMIZE_PREFERENCE_ORDER ? shuffled(PREFERENCE_ITEMS) : [...PREFERENCE_ITEMS];
+
+if (RANDOMIZE_AB_SIDE) {
+  prefItems = prefItems.map(item => {
+    const swap = Math.random() < 0.5;
+    return {
+      ...item,
+      _swapped: swap,
+      _originalA: item.resultA,
+      _originalB: item.resultB,
+      resultA: swap ? item.resultB : item.resultA,
+      resultB: swap ? item.resultA : item.resultB
+    };
+  });
+}
+
+function esc(str) {
+  return String(str ?? "")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+
+function ratingChoices(name) {
+  const labels = ["1 Bad", "2 Poor", "3 Fair", "4 Good", "5 Excellent"];
+  return `<div class="choices">${
+    labels.map((lab, i) => `
+      <div class="choice">
+        <input type="radio" id="${name}_${i+1}" name="${name}" value="${i+1}">
+        <label for="${name}_${i+1}">${lab}</label>
+      </div>`).join("")
+  }</div>`;
+}
+
+function renderMOS() {
+  const root = document.getElementById("mosContainer");
+  root.innerHTML = mosItems.map((item, idx) => `
+    <section class="card" data-kind="mos" data-id="${esc(item.id)}">
+      <div class="sample-head">
+        <div class="sample-id">MOS Sample ${String(idx+1).padStart(2,"0")}</div>
+        <div class="tag">Anonymous Edited Result</div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">Source Audio</div>
+        <audio controls preload="metadata" src="${esc(item.sourceAudio)}"></audio>
+      </div>
+
+      <div class="block">
+        <div class="block-title">Source Description</div>
+        <div class="prompt-box">${esc(item.sourceDescription)}</div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">Editing Instruction</div>
+        <div class="prompt-box">${esc(item.instruction)}</div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">Edited Result</div>
+        <audio controls preload="metadata" src="${esc(item.editedAudio)}"></audio>
+      </div>
+
+      <div class="question">
+        <div class="q-title">MOS-P: How well does the edited result preserve the source music content that is unrelated to the editing instruction?</div>
+        <div class="q-help">Please focus on melody, rhythm, structure, harmony, and other musical attributes that should remain unchanged.</div>
+        ${ratingChoices(item.id + "_MOSP")}
+      </div>
+
+      <div class="question">
+        <div class="q-title">MOS-T: How well does the edited result satisfy the editing instruction?</div>
+        <div class="q-help">Please focus on whether the intended target musical attribute has been successfully edited and matches the target requirement.</div>
+        ${ratingChoices(item.id + "_MOST")}
+      </div>
+    </section>
+  `).join("");
+}
+
+function renderPreference() {
+  const root = document.getElementById("preferenceContainer");
+  root.innerHTML = prefItems.map((item, idx) => `
+    <section class="card" data-kind="pref" data-id="${esc(item.id)}">
+      <div class="sample-head">
+        <div class="sample-id">Preference Test ${String(idx+1).padStart(2,"0")}</div>
+        <div class="tag">Anonymous A/B Comparison</div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">Source Audio</div>
+        <audio controls preload="metadata" src="${esc(item.sourceAudio)}"></audio>
+      </div>
+
+      <div class="block">
+        <div class="block-title">Source Description</div>
+        <div class="prompt-box">${esc(item.sourceDescription)}</div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">Editing Instruction</div>
+        <div class="prompt-box">${esc(item.instruction)}</div>
+      </div>
+
+      <div class="preference-audios">
+        <div class="audio-panel">
+          <div class="block-title">Edited Result A</div>
+          <audio controls preload="metadata" src="${esc(item.resultA)}"></audio>
+        </div>
+        <div class="audio-panel">
+          <div class="block-title">Edited Result B</div>
+          <audio controls preload="metadata" src="${esc(item.resultB)}"></audio>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-title">Considering both target editing fidelity and source content preservation, which edited result performs better overall?</div>
+        <div class="q-help">Please consider both whether the intended edit is successfully achieved and whether source musical content unrelated to the editing target is well preserved.</div>
+        <div class="choices">
+          <div class="choice">
+            <input type="radio" id="${item.id}_A" name="${item.id}_PREF" value="A">
+            <label for="${item.id}_A">Edited Result A</label>
+          </div>
+          <div class="choice">
+            <input type="radio" id="${item.id}_B" name="${item.id}_PREF" value="B">
+            <label for="${item.id}_B">Edited Result B</label>
+          </div>
+        </div>
+      </div>
+    </section>
+  `).join("");
+}
+
+function getRadio(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : "";
+}
+
+function completionStats() {
+  let mosDone = 0;
+  mosItems.forEach(item => {
+    if (getRadio(item.id+"_MOSP") && getRadio(item.id+"_MOST")) mosDone++;
+  });
+  let prefDone = 0;
+  prefItems.forEach(item => {
+    if (getRadio(item.id+"_PREF")) prefDone++;
+  });
+  return { mosDone, prefDone, totalDone: mosDone + prefDone, total: mosItems.length + prefItems.length };
+}
+
+function updateProgress() {
+  const s = completionStats();
+  document.getElementById("progressCount").textContent = `${s.totalDone} / ${s.total}`;
+  document.getElementById("progressFill").style.width = `${(s.totalDone/s.total)*100}%`;
+}
+
+function setStatus(msg, ok=false) {
+  const box = document.getElementById("status");
+  box.textContent = msg;
+  box.className = "status " + (ok ? "ok" : "bad");
+}
+
+function checkCompletion() {
+  const pid = document.getElementById("participantId").value.trim();
+  const s = completionStats();
+  if (!pid) {
+    setStatus(`请先填写参与者编号。当前已完成 ${s.totalDone}/${s.total} 道题。`);
+    return false;
+  }
+  if (s.totalDone < s.total) {
+    setStatus(`还有 ${s.total - s.totalDone} 道题未完成。MOS：${s.mosDone}/${mosItems.length}；偏好：${s.prefDone}/${prefItems.length}。`);
+    return false;
+  }
+  setStatus(`已完成全部 ${s.total} 道题，可以点击“导出 CSV”。`, true);
+  return true;
+}
+
+function csvCell(v) {
+  const s = String(v ?? "");
+  return '"' + s.replaceAll('"','""') + '"';
+}
+
+function collectRows() {
+  const pid = document.getElementById("participantId").value.trim();
+  const note = document.getElementById("participantNote").value.trim();
+  const timestamp = new Date().toISOString();
+  const rows = [];
+
+  mosItems.forEach((item, index) => {
+    rows.push({
+      participant_id: pid,
+      participant_note: note,
+      timestamp,
+      section: "MOS",
+      display_order: index + 1,
+      item_id: item.id,
+      source_audio: item.sourceAudio,
+      source_description: item.sourceDescription,
+      instruction: item.instruction,
+      edited_audio: item.editedAudio,
+      mos_p: getRadio(item.id+"_MOSP"),
+      mos_t: getRadio(item.id+"_MOST"),
+      preference: "",
+      displayed_A: "",
+      displayed_B: "",
+      ab_swapped: ""
+    });
+  });
+
+  prefItems.forEach((item, index) => {
+    rows.push({
+      participant_id: pid,
+      participant_note: note,
+      timestamp,
+      section: "Preference",
+      display_order: index + 1,
+      item_id: item.id,
+      source_audio: item.sourceAudio,
+      source_description: item.sourceDescription,
+      instruction: item.instruction,
+      edited_audio: "",
+      mos_p: "",
+      mos_t: "",
+      preference: getRadio(item.id+"_PREF"),
+      displayed_A: item.resultA,
+      displayed_B: item.resultB,
+      ab_swapped: item._swapped ? "TRUE" : "FALSE"
+    });
+  });
+
+  return rows;
+}
+
+function exportCSV() {
+  const pid = document.getElementById("participantId").value.trim();
+
+  if (!pid) {
+    setStatus("请先填写参与者编号，再导出 CSV。");
+    return;
+  }
+
+  if (REQUIRE_ALL_ANSWERS_BEFORE_EXPORT && !checkCompletion()) {
+    return;
+  }
+
+  try {
+    const rows = collectRows();
+    if (!rows || rows.length === 0) {
+      setStatus("没有可导出的评分数据，请检查是否已完成问卷。");
+      return;
+    }
+
+    const headers = Object.keys(rows[0]);
+    const csv = "\uFEFF" + [
+      headers.map(csvCell).join(","),
+      ...rows.map(r => headers.map(h => csvCell(r[h])).join(","))
+    ].join("\r\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const safePid = pid.replace(/[^\w\-]+/g, "_") || "participant";
+    const filename = `music_editing_MOS_${safePid}.csv`;
+
+    // 创建真正插入 DOM 的下载链接，兼容性比直接 a.click() 更好
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.style.display = "none";
+    document.body.appendChild(a);
+
+    // 同时保留一个可见的手动下载链接，防止浏览器拦截自动下载
+    const area = document.getElementById("downloadArea");
+    if (area) {
+      area.innerHTML = "";
+      area.style.display = "block";
+
+      const manual = document.createElement("a");
+      manual.href = url;
+      manual.download = filename;
+      manual.textContent = "如果没有自动下载，请点击这里下载 CSV";
+      manual.style.display = "inline-block";
+      manual.style.padding = "12px 16px";
+      manual.style.borderRadius = "10px";
+      manual.style.background = "#2563eb";
+      manual.style.color = "#fff";
+      manual.style.textDecoration = "none";
+      manual.style.fontWeight = "700";
+
+      area.appendChild(manual);
+    }
+
+    // 触发自动下载
+    a.click();
+    a.remove();
+
+    setStatus("CSV 已生成。若浏览器没有自动下载，请点击下方蓝色“下载 CSV”链接。", true);
+
+    // 不立即 revoke，避免某些浏览器来不及开始下载
+    window.setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 60000);
+
+  } catch (err) {
+    console.error("CSV export failed:", err);
+    setStatus("CSV 导出失败：" + (err && err.message ? err.message : String(err)));
+  }
+}
+
+function saveLocal() {
+  const payload = {
+    participantId: document.getElementById("participantId").value,
+    participantNote: document.getElementById("participantNote").value,
+    radios: {}
+  };
+  document.querySelectorAll('input[type="radio"]:checked').forEach(el => {
+    payload.radios[el.name] = el.value;
+  });
+  localStorage.setItem("musicEditingMosSurvey", JSON.stringify(payload));
+  setStatus("当前填写内容已保存到此浏览器。", true);
+}
+
+function restoreLocal() {
+  const raw = localStorage.getItem("musicEditingMosSurvey");
+  if (!raw) {
+    setStatus("此浏览器中暂未找到已保存的数据。");
+    return;
+  }
+  const payload = JSON.parse(raw);
+  document.getElementById("participantId").value = payload.participantId || "";
+  document.getElementById("participantNote").value = payload.participantNote || "";
+  Object.entries(payload.radios || {}).forEach(([name, value]) => {
+    const el = document.querySelector(`input[name="${name}"][value="${value}"]`);
+    if (el) el.checked = true;
+  });
+  updateProgress();
+  setStatus("已恢复此前保存在此浏览器中的填写内容。", true);
+}
+
+renderMOS();
+renderPreference();
+document.addEventListener("change", updateProgress);
+updateProgress();
+</script>
+</body>
+</html>
