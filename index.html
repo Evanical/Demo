@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f7fb">
+<title>Music Editing Demo</title>
+<style>
+:root{--ink:#182230;--muted:#687588;--line:#e3e8f0;--paper:#fff;--bg:#f5f7fb;--blue:#3469e8;--blue-soft:#eef3ff;--green:#14866d;--shadow:0 12px 32px rgba(28,44,75,.07)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:20px}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.55}.wrap{max-width:1080px;width:calc(100% - 36px);margin:auto}.hero{padding:54px 0 30px}.eyebrow,.section-overline{font-size:11px;font-weight:800;letter-spacing:.11em;color:var(--blue)}h1{font-size:clamp(32px,5vw,48px);line-height:1.12;letter-spacing:-.035em;margin:12px 0}.hero p{max-width:690px;color:var(--muted);font-size:16px;margin:10px 0}.hero .cn{font-size:14px;margin-top:4px}.task-nav{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0 32px}.task-link{display:flex;flex-direction:column;gap:3px;padding:13px 14px;border:1px solid var(--line);border-radius:13px;background:var(--paper);color:var(--ink);text-decoration:none;transition:.18s}.task-link:hover{border-color:#b9caff;transform:translateY(-2px);box-shadow:var(--shadow)}.task-link span{font-size:14px;font-weight:750}.task-link small{color:var(--muted);font-size:12px}.task-section{margin:48px 0}.section-heading{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:15px}.section-heading h2{font-size:26px;letter-spacing:-.02em;margin:4px 0}.section-cn{color:var(--muted);font-size:14px}.sample-list{display:grid;gap:16px}.sample-card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 3px 12px rgba(28,44,75,.03);scroll-margin-top:20px}.sample-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:13px;border-bottom:1px solid var(--line);margin-bottom:15px}.sample-kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:750}.sample-top h3{font-size:20px;margin:2px 0 0}.sample-count{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;border:1px solid var(--line);padding:5px 9px;border-radius:8px}.prompt-grid,.audio-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.prompt{padding:13px 15px;border-radius:12px;background:#f8f9fc;border:1px solid #edf0f5}.prompt.target{background:var(--blue-soft);border-color:#dfe8ff}.prompt .eyebrow{color:var(--muted);letter-spacing:.06em}.prompt.target .eyebrow{color:var(--blue)}.prompt .eyebrow span{font-weight:600;letter-spacing:0;margin-left:5px}.prompt p{font-size:14px;margin:8px 0 0;overflow-wrap:anywhere}.audio-grid{margin-top:12px}.audio-box{padding:14px;border-radius:13px;border:1px solid var(--line);background:#fff}.audio-box.output{border-color:#d7e3ff;background:#fbfcff}.audio-title{display:flex;align-items:center;gap:10px;margin-bottom:9px}.audio-index{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#f0f2f6;color:#586477;font-size:11px;font-weight:800}.output .audio-index{background:#e7efff;color:var(--blue)}.audio-title strong,.audio-title small{display:block}.audio-title strong{font-size:14px}.audio-title small{font-size:12px;color:var(--muted)}audio{display:block;width:100%;height:40px}.footer{border-top:1px solid var(--line);padding:22px 0 42px;color:var(--muted);font-size:12px}.audio-error{font-size:12px;color:#b42318;margin:6px 0 0;display:none}.audio-box.failed .audio-error{display:block}@media(max-width:800px){.task-nav{grid-template-columns:repeat(2,1fr)}.task-link:last-child{grid-column:span 2}}@media(max-width:600px){.wrap{width:calc(100% - 24px)}.hero{padding-top:34px}.prompt-grid,.audio-grid{grid-template-columns:1fr}.sample-card{padding:16px}.task-section{margin:34px 0}.section-heading h2{font-size:23px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+  <div class="eyebrow">MUSIC EDITING · LISTENING DEMO</div>
+  <h1>Music Editing Demo</h1>
+  <p>Listen to the original clip and the edited output for each example. The prompts describe the requested musical change.</p>
+  <p class="cn">按任务浏览样例，试听原始音频与模型编辑结果，并查看对应的源 Prompt 和目标 Prompt。本页面仅用于试听展示。</p>
+</header>
+<nav class="task-nav" aria-label="Editing tasks">
+<a class="task-link" href="#background"><span>Background Editing</span><small>背景编辑 · 5 clips</small></a>
+<a class="task-link" href="#genre"><span>Genre Editing</span><small>曲风编辑 · 5 clips</small></a>
+<a class="task-link" href="#instrument"><span>Instrument Editing</span><small>乐器编辑 · 5 clips</small></a>
+<a class="task-link" href="#mood"><span>Mood Editing</span><small>情绪编辑 · 5 clips</small></a>
+<a class="task-link" href="#MuiscBench"><span>Chord Editing · MusicBench</span><small>和弦编辑 · MusicBench · 5 clips</small></a>
+</nav>
+<section class="task-section" id="background"><div class="section-heading"><div><span class="section-overline">TASK COLLECTION</span><h2>Background Editing</h2></div><span class="section-cn">背景编辑</span></div><div class="sample-list"><article class="sample-card" id="sample-background-698">
+  <div class="sample-top"><div><span class="sample-kicker">Background Editing</span><h3>Sample 698</h3></div><span class="sample-count">698</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a lesson recording of harmonica music with a [dominant overpowering] voice</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a lesson recording of harmonica music with a [mild gentle] voice</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/background/698/source.wav" aria-label="Original audio for sample 698"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/background/698/fisc_last.wav" aria-label="Edited audio for sample 698"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-background-724">
+  <div class="sample-top"><div><span class="sample-kicker">Background Editing</span><h3>Sample 724</h3></div><span class="sample-count">724</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a recording of loud church bells with a [noisy fading] background</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a recording of loud church bells with a [clear vibrant] background</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/background/724/source.wav" aria-label="Original audio for sample 724"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/background/724/fisc_last.wav" aria-label="Edited audio for sample 724"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-background-745">
+  <div class="sample-top"><div><span class="sample-kicker">Background Editing</span><h3>Sample 745</h3></div><span class="sample-count">745</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a recording of mellow acoustic guitar and violin music with a [strong] female vocalisation</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a recording of mellow acoustic guitar and violin music with a [soft] female vocalisation</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/background/745/source.wav" aria-label="Original audio for sample 745"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/background/745/fisc_last.wav" aria-label="Edited audio for sample 745"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-background-769">
+  <div class="sample-top"><div><span class="sample-kicker">Background Editing</span><h3>Sample 769</h3></div><span class="sample-count">769</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a live house beat recording with [silent] noise</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a live house beat recording with [ambient camera] noise</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/background/769/source.wav" aria-label="Original audio for sample 769"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/background/769/fisc_last.wav" aria-label="Edited audio for sample 769"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-background-778">
+  <div class="sample-top"><div><span class="sample-kicker">Background Editing</span><h3>Sample 778</h3></div><span class="sample-count">778</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a fun and energetic piece featuring tinny wooden percussion electric guitar and brass with [crowd cheering]</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a fun and energetic piece featuring tinny wooden percussion electric guitar and brass with [instrumental brass resonance]</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/background/778/source.wav" aria-label="Original audio for sample 778"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/background/778/fisc_last.wav" aria-label="Edited audio for sample 778"></audio></div>
+  </div>
+</article></div></section>
+<section class="task-section" id="genre"><div class="section-heading"><div><span class="section-overline">TASK COLLECTION</span><h2>Genre Editing</h2></div><span class="section-cn">曲风编辑</span></div><div class="sample-list"><article class="sample-card" id="sample-genre-404">
+  <div class="sample-top"><div><span class="sample-kicker">Genre Editing</span><h3>Sample 404</h3></div><span class="sample-count">404</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a recording of [pop] music with energetic tom rolls shimmering cymbals punchy kick and snare fading out in the outro</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a recording of [rock] music with energetic tom rolls shimmering cymbals punchy kick and snare fading out in the outro</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/genre/404/source.wav" aria-label="Original audio for sample 404"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/genre/404/fisc_last.wav" aria-label="Edited audio for sample 404"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-genre-407">
+  <div class="sample-top"><div><span class="sample-kicker">Genre Editing</span><h3>Sample 407</h3></div><span class="sample-count">407</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>melancholic 2000s [rock] with electric guitars electric bass and acoustic drums at a slow tempo</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>melancholic 2000s [jazz] with electric guitars electric bass and acoustic drums at a slow tempo</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/genre/407/source.wav" aria-label="Original audio for sample 407"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/genre/407/fisc_last.wav" aria-label="Edited audio for sample 407"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-genre-415">
+  <div class="sample-top"><div><span class="sample-kicker">Genre Editing</span><h3>Sample 415</h3></div><span class="sample-count">415</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a joyful [andalusian] orchestra with male vocals strings oud and percussion</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a joyful [latin music] orchestra with male vocals strings oud and percussion</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/genre/415/source.wav" aria-label="Original audio for sample 415"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/genre/415/fisc_last.wav" aria-label="Edited audio for sample 415"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-genre-421">
+  <div class="sample-top"><div><span class="sample-kicker">Genre Editing</span><h3>Sample 421</h3></div><span class="sample-count">421</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a vivacious youthful [synth pop rock] with energetic electronic rhythm and enthusiastic drumming</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a vivacious youthful [country] with energetic electronic rhythm and enthusiastic drumming</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/genre/421/source.wav" aria-label="Original audio for sample 421"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/genre/421/fisc_last.wav" aria-label="Edited audio for sample 421"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-genre-425">
+  <div class="sample-top"><div><span class="sample-kicker">Genre Editing</span><h3>Sample 425</h3></div><span class="sample-count">425</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a lively [folk] dance track featuring tambourines stringed instruments hand drums and shakers</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a lively [latin music] dance track featuring tambourines stringed instruments hand drums and shakers</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/genre/425/source.wav" aria-label="Original audio for sample 425"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/genre/425/fisc_last.wav" aria-label="Edited audio for sample 425"></audio></div>
+  </div>
+</article></div></section>
+<section class="task-section" id="instrument"><div class="section-heading"><div><span class="section-overline">TASK COLLECTION</span><h2>Instrument Editing</h2></div><span class="section-cn">乐器编辑</span></div><div class="sample-list"><article class="sample-card" id="sample-instrument-19">
+  <div class="sample-top"><div><span class="sample-kicker">Instrument Editing</span><h3>Sample 19</h3></div><span class="sample-count">019</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a recording featuring cow [bells] and flute with mystical nature sounds</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a recording featuring cow [trumpet] and flute with mystical nature sounds</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/instrument/19/source.wav" aria-label="Original audio for sample 19"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/instrument/19/fisc_last.wav" aria-label="Edited audio for sample 19"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-instrument-25">
+  <div class="sample-top"><div><span class="sample-kicker">Instrument Editing</span><h3>Sample 25</h3></div><span class="sample-count">025</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a recording featuring a wide resonating [woodwind] melody with audio crackles</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a recording featuring a wide resonating [trumpet] melody with audio crackles</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/instrument/25/source.wav" aria-label="Original audio for sample 25"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/instrument/25/fisc_last.wav" aria-label="Edited audio for sample 25"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-instrument-35">
+  <div class="sample-top"><div><span class="sample-kicker">Instrument Editing</span><h3>Sample 35</h3></div><span class="sample-count">035</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a recording of gentle mellow instrumental music with piano strings and [acoustic guitar]</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a recording of gentle mellow instrumental music with piano strings and [flute]</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/instrument/35/source.wav" aria-label="Original audio for sample 35"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/instrument/35/fisc_last.wav" aria-label="Edited audio for sample 35"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-instrument-74">
+  <div class="sample-top"><div><span class="sample-kicker">Instrument Editing</span><h3>Sample 74</h3></div><span class="sample-count">074</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a soulful jazz piece with [saxophone] solo melody shimmering shakers tinny metallic percussions and mellow sustained brass</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a soulful jazz piece with [trumpet] solo melody shimmering shakers tinny metallic percussions and mellow sustained brass</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/instrument/74/source.wav" aria-label="Original audio for sample 74"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/instrument/74/fisc_last.wav" aria-label="Edited audio for sample 74"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-instrument-78">
+  <div class="sample-top"><div><span class="sample-kicker">Instrument Editing</span><h3>Sample 78</h3></div><span class="sample-count">078</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a lively country tune featuring banjo acoustic [piano] violin and upright bass</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a lively country tune featuring banjo acoustic [guitar] violin and upright bass</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/instrument/78/source.wav" aria-label="Original audio for sample 78"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/instrument/78/fisc_last.wav" aria-label="Edited audio for sample 78"></audio></div>
+  </div>
+</article></div></section>
+<section class="task-section" id="mood"><div class="section-heading"><div><span class="section-overline">TASK COLLECTION</span><h2>Mood Editing</h2></div><span class="section-cn">情绪编辑</span></div><div class="sample-list"><article class="sample-card" id="sample-mood-530">
+  <div class="sample-top"><div><span class="sample-kicker">Mood Editing</span><h3>Sample 530</h3></div><span class="sample-count">530</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a [lively] cheerful instrumental piece featuring classical strings and horn</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a [melancholy] cheerful instrumental piece featuring classical strings and horn</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/mood/530/source.wav" aria-label="Original audio for sample 530"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/mood/530/fisc_last.wav" aria-label="Edited audio for sample 530"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-mood-532">
+  <div class="sample-top"><div><span class="sample-kicker">Mood Editing</span><h3>Sample 532</h3></div><span class="sample-count">532</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>an [uplifting] hopeful composition featuring piano string and brass instruments including french horn</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>an [melancholic] hopeful composition featuring piano string and brass instruments including french horn</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/mood/532/source.wav" aria-label="Original audio for sample 532"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/mood/532/fisc_last.wav" aria-label="Edited audio for sample 532"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-mood-533">
+  <div class="sample-top"><div><span class="sample-kicker">Mood Editing</span><h3>Sample 533</h3></div><span class="sample-count">533</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a [cheerful] folk lute song with slow tempo and fingerpicking technique</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a [melancholic] folk lute song with slow tempo and fingerpicking technique</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/mood/533/source.wav" aria-label="Original audio for sample 533"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/mood/533/fisc_last.wav" aria-label="Edited audio for sample 533"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-mood-538">
+  <div class="sample-top"><div><span class="sample-kicker">Mood Editing</span><h3>Sample 538</h3></div><span class="sample-count">538</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a [happy] mood instrumental music with electric guitar and open strings</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a [melancholic] mood instrumental music with electric guitar and open strings</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/mood/538/source.wav" aria-label="Original audio for sample 538"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/mood/538/fisc_last.wav" aria-label="Edited audio for sample 538"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-mood-601">
+  <div class="sample-top"><div><span class="sample-kicker">Mood Editing</span><h3>Sample 601</h3></div><span class="sample-count">601</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>a recording of a solo trumpet piece [upbeat] and cheery</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>a recording of a solo trumpet piece [melancholic] and cheery</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/mood/601/source.wav" aria-label="Original audio for sample 601"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/mood/601/fisc_last.wav" aria-label="Edited audio for sample 601"></audio></div>
+  </div>
+</article></div></section>
+<section class="task-section" id="MuiscBench"><div class="section-heading"><div><span class="section-overline">TASK COLLECTION</span><h2>Chord Editing · MusicBench</h2></div><span class="section-cn">和弦编辑 · MusicBench</span></div><div class="sample-list"><article class="sample-card" id="sample-MuiscBench-132">
+  <div class="sample-top"><div><span class="sample-kicker">Chord Editing · MusicBench</span><h3>Sample 132</h3></div><span class="sample-count">132</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>This song is an instrumental. The tempo of the background music is slow , with electric guitar harmony and rhythmic drum with loud chaotic, dissonant sounds. The music is out of sync as the unidentifiable sounds are accelerated.</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>The chord progression in this song is Eb7/G, Fm7.</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/MuiscBench/132/source.wav" aria-label="Original audio for sample 132"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/MuiscBench/132/fisc_last.wav" aria-label="Edited audio for sample 132"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-MuiscBench-207">
+  <div class="sample-top"><div><span class="sample-kicker">Chord Editing · MusicBench</span><h3>Sample 207</h3></div><span class="sample-count">207</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>The low quality recording features echoing sleep drone sound effects. It sounds weird and cool at the same time. The recording is noisy and in mono.</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>The chord progression in this song is Dmaj7, Eb7.</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/MuiscBench/207/source.wav" aria-label="Original audio for sample 207"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/MuiscBench/207/fisc_last.wav" aria-label="Edited audio for sample 207"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-MuiscBench-298">
+  <div class="sample-top"><div><span class="sample-kicker">Chord Editing · MusicBench</span><h3>Sample 298</h3></div><span class="sample-count">298</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>The song is an instrumental. The tempo is medium with a groovy bass line, keyboard accompaniment, percussive bass line , steady drumming drumming  and other percussion hits. The song is a pop song cover with a bad audio quality.</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>The chord progression in this song is Gm, C7, Dm, Bb6, C.</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/MuiscBench/298/source.wav" aria-label="Original audio for sample 298"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/MuiscBench/298/fisc_last.wav" aria-label="Edited audio for sample 298"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-MuiscBench-311">
+  <div class="sample-top"><div><span class="sample-kicker">Chord Editing · MusicBench</span><h3>Sample 311</h3></div><span class="sample-count">311</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>The low quality recording features an onomatopoeia, performed by male vocalists. The recording is noisy and it is crackling.</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>The chord progression in this song is Ab7/C, B, Eb, F#dim.</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/MuiscBench/311/source.wav" aria-label="Original audio for sample 311"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/MuiscBench/311/fisc_last.wav" aria-label="Edited audio for sample 311"></audio></div>
+  </div>
+</article><article class="sample-card" id="sample-MuiscBench-338">
+  <div class="sample-top"><div><span class="sample-kicker">Chord Editing · MusicBench</span><h3>Sample 338</h3></div><span class="sample-count">338</span></div>
+  <div class="prompt-grid">
+    <div class="prompt"><div class="eyebrow">SOURCE PROMPT <span>源音频描述</span></div><p>The low quality recording features a wide choir female vocals singing, while there is a flat male vocal talking over it. It sounds like a tutorial of sorts.</p></div>
+    <div class="prompt target"><div class="eyebrow">TARGET PROMPT <span>目标编辑描述</span></div><p>The chord sequence is A, Am7, G.</p></div>
+  </div>
+  <div class="audio-grid">
+    <div class="audio-box"><div class="audio-title"><span class="audio-index">01</span><div><strong>Original</strong><small>原始音频</small></div></div><audio controls preload="none" src="demo/MuiscBench/338/source.wav" aria-label="Original audio for sample 338"></audio></div>
+    <div class="audio-box output"><div class="audio-title"><span class="audio-index">02</span><div><strong>Edited Output</strong><small>模型编辑结果</small></div></div><audio controls preload="none" src="demo/MuiscBench/338/fisc_last.wav" aria-label="Edited audio for sample 338"></audio></div>
+  </div>
+</article></div></section>
+<footer class="footer">Audio playback is provided by your browser. / 音频由浏览器直接播放。</footer>
+</main>
+<script>
+document.querySelectorAll("audio").forEach(player => {
+  player.addEventListener("error", () => {
+    const box = player.closest(".audio-box");
+    box.classList.add("failed");
+    let message = box.querySelector(".audio-error");
+    if (!message) {
+      message = document.createElement("p");
+      message.className = "audio-error";
+      message.textContent = "Audio file not found. Check this sample folder and filename. / 找不到音频，请检查样例文件夹和文件名。";
+      box.appendChild(message);
+    }
+  });
+});
+</script>
+</body>
+</html>
